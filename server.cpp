@@ -4,10 +4,18 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+class Connection {
+        int fd;
+        std::string ip_address;
+        uint16_t port;
+        std::string status;
+};
+
 int main() {
         // create a TCP socket accepting IPv4 addresses
         int server_fd = socket(AF_INET, SOCK_STREAM, 0);
 
+        // initialize address struct
         struct sockaddr_in addr;
         addr.sin_family = AF_INET;
         addr.sin_port = htons(8080);
