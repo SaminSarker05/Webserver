@@ -7,7 +7,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static const uint16_t PORT = 9090;
+static const uint16_t PORT = 8080;
 
 void check(int expr, const char* msg) {
         if (expr < 0) {
@@ -30,11 +30,11 @@ int main() {
         check(connect(socket_fd, (struct sockaddr *) &addr, sizeof(addr)), 
                 "Failed to connect to server");
 
-        std::string buffer;
-        std::cout << "Enter a message for the server to read: ";
-        std::getline(std::cin, buffer);
-        send(socket_fd, buffer.c_str(), buffer.length(), 0);
-
+        // std::string buffer;
+        // std::cout << "Enter a message for the server to read: ";
+        // std::getline(std::cin, buffer);
+        // send(socket_fd, buffer.c_str(), buffer.length(), 0);
+        send(socket_fd, "Hello from client!\n", strlen("Hello from client!\n"), 0);
         close(socket_fd);
 }
 

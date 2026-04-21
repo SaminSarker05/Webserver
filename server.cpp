@@ -1,3 +1,8 @@
+/*
+TODO:
+- add heartbeat logic to detect and close dead client connections
+- broadcast messages from one client to all other clients
+*/
 #include <iostream>
 #include <thread>
 #include <arpa/inet.h>
@@ -5,7 +10,7 @@
 #include <unistd.h>
 
 static const int BACKLOG = 10;
-static const uint16_t PORT = 9090;
+static const uint16_t PORT = 8080;
 
 void check(int expr, const char* msg) {
         if (expr < 0) {
@@ -65,11 +70,11 @@ int main() {
                 inet_ntop(AF_INET, 
                         &client_addr.sin_addr, client_ip, sizeof(client_ip));
                 int client_port = ntohs(client_addr.sin_port);
-                std::cout << "[client] accepeted " << 
+                std::cout << "[client] accepted " << 
                         client_ip << ":" << client_port << std::endl;
 
-                handle_connection(client_fd);
-                // std::thread(handle_connection, client_fd).detach();
+                // handle_connection(client_fd);
+                std::thread(handle_connection, client_fd).detach();
         }
 
         close(server_fd);
