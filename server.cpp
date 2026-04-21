@@ -5,10 +5,11 @@
 #include <unistd.h>
 
 static const int BACKLOG = 10;
+static const uint16_t PORT = 9090;
 
 void check(int expr, const char* msg) {
         if (expr < 0) {
-                std::cerr << msg << std::endl;
+                perror(msg);  // print error message from errno
                 exit(1);
         }
 }
@@ -35,25 +36,27 @@ int main() {
         // initialize address struct
         struct sockaddr_in addr{};
         addr.sin_family = AF_INET;
-        addr.sin_port = htons(8080);
+        addr.sin_port = htons(PORT);
         addr.sin_addr.s_addr = INADDR_ANY;
+
+        // allow immediate reuse of address after server restarts
+        int opt = 1;
+        setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
         // bind socket to all interfaces on port 8080
         check(bind(server_fd, (sockaddr*) &addr, sizeof(addr)),  
                 "Failed to bind socket");
-        listen(server_fd, BACKLOG);
+
         check(listen(server_fd, BACKLOG), "Failed to listen on socket");
-        std::cout << "server listening on port 8080..." << std::endl;
+        std::cout << "server listening on port " << PORT << "..." << std::endl;
 
         while (true) {
                 // wait for and accept incoming client connections
                 sockaddr_in client_addr{};
                 socklen_t client_len = sizeof(client_addr);
 
-                std::cout << "debug3" << std::endl;
                 int client_fd = accept(server_fd, (sockaddr *) &client_addr, 
                         &client_len);
-                std::cout << "debug2" << std::endl;
                 if (client_fd < 0)
                         continue;
 
@@ -62,7 +65,6 @@ int main() {
                 inet_ntop(AF_INET, 
                         &client_addr.sin_addr, client_ip, sizeof(client_ip));
                 int client_port = ntohs(client_addr.sin_port);
-                std::cout << "debug1" << std::endl;
                 std::cout << "[client] accepeted " << 
                         client_ip << ":" << client_port << std::endl;
 

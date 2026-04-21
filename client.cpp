@@ -7,6 +7,8 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
+static const uint16_t PORT = 9090;
+
 void check(int expr, const char* msg) {
         if (expr < 0) {
                 std::cerr << msg << std::endl;
@@ -22,7 +24,7 @@ int main() {
         // define where to connect
         struct sockaddr_in addr;
         addr.sin_family = AF_INET;
-        addr.sin_port = htons(8080);
+        addr.sin_port = htons(PORT);
         inet_pton(AF_INET, "127.0.0.1", &addr.sin_addr);
 
         check(connect(socket_fd, (struct sockaddr *) &addr, sizeof(addr)), 
